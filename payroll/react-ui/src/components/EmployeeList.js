@@ -29,7 +29,7 @@ function EmployeeList() {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get('http://localhost:8080/employees');
+      const response = await axios.get('/employees');
       
       // Safely handle the response - ensure it's always an array
       let data = response.data;
@@ -73,7 +73,7 @@ function EmployeeList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`http://localhost:8080/employees/${id}`);
+        await axios.delete(`/employees/${id}`);
         // Filter out the deleted employee from the state
         setEmployees(prevEmployees => 
           Array.isArray(prevEmployees) 
@@ -89,7 +89,7 @@ function EmployeeList() {
 
   const handleUpdate = async (id, updatedEmployee) => {
     try {
-      const response = await axios.put(`http://localhost:8080/employees/${id}`, updatedEmployee);
+      const response = await axios.put(`/employees/${id}`, updatedEmployee);
       const updatedData = response.data;
       
       // Safely update the employees array
