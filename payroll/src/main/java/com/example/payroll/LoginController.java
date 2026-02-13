@@ -68,8 +68,10 @@ public class LoginController {
             // Save employee
             Employee savedEmployee = employeeRepository.save(newEmployee);
 
+            // Return response with DTO (without password)
+            EmployeeDTO employeeDTO = convertToDTO(savedEmployee);
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new RegisterResponse(true, "Registration successful", savedEmployee));
+                .body(new RegisterResponse(true, "Registration successful", employeeDTO));
         } catch (RoleNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new RegisterResponse(false, e.getMessage(), null));
@@ -97,7 +99,9 @@ public class LoginController {
             EmployeeUserDetails userDetails = (EmployeeUserDetails) authentication.getPrincipal();
             Employee employee = userDetails.getEmployee();
 
-            return ResponseEntity.ok(new LoginResponse(true, "Login successful", employee));
+            // Return response with DTO (without password)
+            EmployeeDTO employeeDTO = convertToDTO(employee);
+            return ResponseEntity.ok(new LoginResponse(true, "Login successful", employeeDTO));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new LoginResponse(false, "Invalid username or password", null));
@@ -110,7 +114,8 @@ public class LoginController {
             // Get current authentication from SecurityContextHolder
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             
-            if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication != null && authentication.isAuthenticated() && 
+                !(authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser"))) {
                 EmployeeUserDetails userDetails = (EmployeeUserDetails) authentication.getPrincipal();
                 Employee employee = userDetails.getEmployee();
                 
@@ -133,6 +138,51 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new LoginResponse(false, "Error retrieving user: " + e.getMessage(), null));
         }
+    }
+
+    // Helper method to convert Employee to EmployeeDTO (excludes password)
+    private EmployeeDTO convertToDTO(Employee employee) {
+        return new EmployeeDTO(
+            employee.getId(),
+            employee.getName(),
+            employee.getUsername(),
+            employee.getRole() != null ? employee.getRole().getName() : null,
+            employee.getRole() != null ? employee.getRole().getId() : null
+        );
+    }
+
+    // DTO class for Employee response (without password)
+    public static class EmployeeDTO {
+        private Long id;
+        private String name;
+        private String username;
+        private String role;
+        private Long roleId;
+
+        public EmployeeDTO() {}
+
+        public EmployeeDTO(Long id, String name, String username, String role, Long roleId) {
+            this.id = id;
+            this.name = name;
+            this.username = username;
+            this.role = role;
+            this.roleId = roleId;
+        }
+
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
+
+        public Long getRoleId() { return roleId; }
+        public void setRoleId(Long roleId) { this.roleId = roleId; }
     }
 
     // DTO classes
@@ -167,11 +217,11 @@ public class LoginController {
     public static class LoginResponse {
         private boolean success;
         private String message;
-        private Employee employee;
+        private EmployeeDTO employee;
 
         public LoginResponse() {}
 
-        public LoginResponse(boolean success, String message, Employee employee) {
+        public LoginResponse(boolean success, String message, EmployeeDTO employee) {
             this.success = success;
             this.message = message;
             this.employee = employee;
@@ -193,11 +243,11 @@ public class LoginController {
             this.message = message;
         }
 
-        public Employee getEmployee() {
+        public EmployeeDTO getEmployee() {
             return employee;
         }
 
-        public void setEmployee(Employee employee) {
+        public void setEmployee(EmployeeDTO employee) {
             this.employee = employee;
         }
     }
@@ -286,11 +336,11 @@ public class LoginController {
     public static class RegisterResponse {
         private boolean success;
         private String message;
-        private Employee employee;
+        private EmployeeDTO employee;
 
         public RegisterResponse() {}
 
-        public RegisterResponse(boolean success, String message, Employee employee) {
+        public RegisterResponse(boolean success, String message, EmployeeDTO employee) {
             this.success = success;
             this.message = message;
             this.employee = employee;
@@ -312,11 +362,11 @@ public class LoginController {
             this.message = message;
         }
 
-        public Employee getEmployee() {
+        public EmployeeDTO getEmployee() {
             return employee;
         }
 
-        public void setEmployee(Employee employee) {
+        public void setEmployee(EmployeeDTO employee) {
             this.employee = employee;
         }
     }

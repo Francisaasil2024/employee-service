@@ -54,17 +54,16 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Fixes "Failed to Fetch"
             .csrf(csrf -> csrf.disable()) // Allows Postman/React POST requests
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No more HTML Login redirects
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No HTML form login redirects
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/auth/login", "/auth/register").permitAll() // Open access for registration/login
-                .requestMatchers("/employees/**").authenticated() // Francis must be logged in to see this
+                .requestMatchers("/auth/**").permitAll() // Open access for all auth endpoints (login, register, etc.)
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setContentType("application/json");
                     response.setStatus(401);
-                    response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Please sign in first\"}");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Unauthorized - Please sign in first\"}");
                 })
             );
         
