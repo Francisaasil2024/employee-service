@@ -35,6 +35,7 @@ class EmployeeController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DEVELOPER', 'TESTER', 'MANAGER')")
     List<Employee> all() {
         return employeeRepository.findAll();
+        
     }
 
     @PostMapping("/employees")
