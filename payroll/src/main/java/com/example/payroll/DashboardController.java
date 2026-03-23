@@ -40,6 +40,10 @@ public class DashboardController {
             this.totalEmployees = totalEmployees;
         }
 
+        
         public long getTotalEmployees() { return totalEmployees; }
     }
 }
+
+
+
