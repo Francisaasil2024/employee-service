@@ -39,13 +39,12 @@ class EmployeeController {
         if (newEmployee.getUsername() == null || newEmployee.getUsername().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee username is required");
         }
-        if (newEmployee.getRole() == null || newEmployee.getRole().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee role is required");
+        if (newEmployee.getRoleId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee roleId is required");
         }
 
-        String roleName = newEmployee.getRole().trim();
-        Role role = roleRepository.findByName(roleName)
-                .orElseGet(() -> roleRepository.save(new Role(roleName)));
+        Role role = roleRepository.findById(newEmployee.getRoleId())
+                .orElseThrow(() -> new RoleNotFoundException(newEmployee.getRoleId()));
 
         Employee employee = new Employee(newEmployee.getName().trim(), newEmployee.getUsername().trim(), role);
         return employeeRepository.save(employee);
@@ -54,7 +53,7 @@ class EmployeeController {
     public static class EmployeeRequest {
         private String name;
         private String username;
-        private String role;
+        private Long roleId;
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
@@ -62,8 +61,8 @@ class EmployeeController {
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
 
-        public String getRole() { return role; }
-        public void setRole(String role) { this.role = role; }
+        public Long getRoleId() { return roleId; }
+        public void setRoleId(Long roleId) { this.roleId = roleId; }
     }
     
     @GetMapping("/employees/{id}")
