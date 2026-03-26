@@ -5,6 +5,7 @@ import com.example.payroll.role.RoleRepository;
 import com.example.payroll.role.RoleNotFoundException;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 class EmployeeController {
@@ -31,20 +33,15 @@ class EmployeeController {
 
     @PostMapping("/employees")
     Employee newEmployee(@RequestBody Employee newEmployee) {
-        
+        if (newEmployee.getRole() == null || newEmployee.getRole().getId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role and role.id are required in request body");
+        }
+
         Long roleId = newEmployee.getRole().getId();
-        
         Role role = roleRepository.findById(roleId)
             .orElseThrow(() -> new RoleNotFoundException(roleId));
-        
-        newEmployee.setRole(role);
-        
-        // optionally encode password or store as provided
-        return employeeRepository.save(newEmployee);
-    }
 
-    @PostMapping("/api/employees")
-    Employee addEmployee(@RequestBody Employee newEmployee) {
+        newEmployee.setRole(role);
         return employeeRepository.save(newEmployee);
     }
     
