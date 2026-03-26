@@ -17,9 +17,7 @@ public class Employee {
     private String name;
     @Column(unique = true, nullable = false)
     private String username;
-    @JsonIgnore
-    private String password;
-    
+
     // Simple ManyToOne mapping (assumes Role has a primary key named 'id')
     @ManyToOne 
     private Role role; 
@@ -31,10 +29,9 @@ public class Employee {
         this.role = role;
     }
 
-    Employee(String name, String username, String password, Role role) {
+    Employee(String name, String username, Role role) {
         this.name = name;
         this.username = username;
-        this.password = password;
         this.role = role;
     }
 
@@ -68,14 +65,6 @@ public class Employee {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Long getRoleId() {

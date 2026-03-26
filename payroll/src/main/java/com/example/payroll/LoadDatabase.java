@@ -37,17 +37,17 @@ class LoadDatabase {
 
             // Only create employees if they don't already exist (prevents duplicate key errors)
             if (employeeRepository.findByUsername("bilbo").isEmpty()) {
-                Employee bilbo = new Employee("Bilbo Baggins", "bilbo", "password123", developerRole);
+                Employee bilbo = new Employee("Bilbo Baggins", "bilbo", developerRole);
                 log.info("Preloading " + employeeRepository.save(bilbo));
             }
             
             if (employeeRepository.findByUsername("frodo").isEmpty()) {
-                Employee frodo = new Employee("Frodo Baggins", "frodo", "password123", testerRole);
+                Employee frodo = new Employee("Frodo Baggins", "frodo", testerRole);
                 log.info("Preloading " + employeeRepository.save(frodo));
             }
             
             if (employeeRepository.findByUsername("admin").isEmpty()) {
-                Employee admin = new Employee("Admin User", "admin", "admin123", adminRole);
+                Employee admin = new Employee("Admin User", "admin", adminRole);
                 log.info("Preloading " + employeeRepository.save(admin));
             }
         };

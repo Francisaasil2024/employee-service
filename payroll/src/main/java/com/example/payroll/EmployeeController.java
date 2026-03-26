@@ -67,12 +67,7 @@ class EmployeeController {
             return new LoginResponse(false, null, "Invalid username");
         }
 
-        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
-            if (employee.getPassword() == null || !employee.getPassword().equals(request.getPassword().trim())) {
-                return new LoginResponse(false, null, "Invalid password");
-            }
-        }
-
+        // Password is no longer part of the Employee model.
         return new LoginResponse(true, employee, "Login successful");
     }
 
@@ -90,10 +85,6 @@ class EmployeeController {
                     employee.setRole(role);
                 }
                 
-                if (newEmployee.getPassword() != null && !newEmployee.getPassword().isEmpty()) {
-                    employee.setPassword(newEmployee.getPassword());
-                }
-                
                 return employeeRepository.save(employee);
             })
             .orElseThrow(() -> new EmployeeNotFoundException(id));
@@ -106,12 +97,9 @@ class EmployeeController {
 
     public static class LoginRequest {
         private String username;
-        private String password;
 
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
     }
 
     public static class LoginResponse {
