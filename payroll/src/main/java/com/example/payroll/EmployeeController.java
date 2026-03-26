@@ -32,17 +32,38 @@ class EmployeeController {
     }
 
     @PostMapping("/employees")
-    Employee newEmployee(@RequestBody Employee newEmployee) {
-        if (newEmployee.getRole() == null || newEmployee.getRole().getId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role and role.id are required in request body");
+    Employee newEmployee(@RequestBody EmployeeRequest newEmployee) {
+        if (newEmployee.getName() == null || newEmployee.getName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee name is required");
+        }
+        if (newEmployee.getUsername() == null || newEmployee.getUsername().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee username is required");
+        }
+        if (newEmployee.getRole() == null || newEmployee.getRole().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee role is required");
         }
 
-        Long roleId = newEmployee.getRole().getId();
-        Role role = roleRepository.findById(roleId)
-            .orElseThrow(() -> new RoleNotFoundException(roleId));
+        String roleName = newEmployee.getRole().trim();
+        Role role = roleRepository.findByName(roleName)
+                .orElseGet(() -> roleRepository.save(new Role(roleName)));
 
-        newEmployee.setRole(role);
-        return employeeRepository.save(newEmployee);
+        Employee employee = new Employee(newEmployee.getName().trim(), newEmployee.getUsername().trim(), role);
+        return employeeRepository.save(employee);
+    }
+
+    public static class EmployeeRequest {
+        private String name;
+        private String username;
+        private String role;
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
     }
     
     @GetMapping("/employees/{id}")
