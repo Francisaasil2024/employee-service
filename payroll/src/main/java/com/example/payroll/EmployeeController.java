@@ -42,11 +42,38 @@ class EmployeeController {
         // optionally encode password or store as provided
         return employeeRepository.save(newEmployee);
     }
+
+    @PostMapping("/api/employees")
+    Employee addEmployee(@RequestBody Employee newEmployee) {
+        return employeeRepository.save(newEmployee);
+    }
     
     @GetMapping("/employees/{id}")
     Employee one(@PathVariable Long id) {
         return employeeRepository.findById(id)
             .orElseThrow(() -> new EmployeeNotFoundException(id));
+    }
+
+    @PostMapping("/auth/login")
+    LoginResponse login(@RequestBody LoginRequest request) {
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+            return new LoginResponse(false, null, "Username is required");
+        }
+
+        Employee employee = employeeRepository.findByUsername(request.getUsername().trim())
+            .orElse(null);
+
+        if (employee == null) {
+            return new LoginResponse(false, null, "Invalid username");
+        }
+
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            if (employee.getPassword() == null || !employee.getPassword().equals(request.getPassword().trim())) {
+                return new LoginResponse(false, null, "Invalid password");
+            }
+        }
+
+        return new LoginResponse(true, employee, "Login successful");
     }
 
     @PutMapping("/employees/{id}")
@@ -75,4 +102,36 @@ class EmployeeController {
     @DeleteMapping("/employees/{id}")
     void deleteEmployee(@PathVariable Long id) {
         employeeRepository.deleteById(id);
-    }}
+    }
+
+    public static class LoginRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+    }
+
+    public static class LoginResponse {
+        private boolean success;
+        private Employee employee;
+        private String message;
+
+        public LoginResponse() {}
+
+        public LoginResponse(boolean success, Employee employee, String message) {
+            this.success = success;
+            this.employee = employee;
+            this.message = message;
+        }
+
+        public boolean isSuccess() { return success; }
+        public void setSuccess(boolean success) { this.success = success; }
+        public Employee getEmployee() { return employee; }
+        public void setEmployee(Employee employee) { this.employee = employee; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+    }
+}
