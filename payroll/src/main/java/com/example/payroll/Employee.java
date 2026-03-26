@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Employee {
