@@ -12,6 +12,7 @@ public class PayrollApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(PayrollApplication.class);
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(PayrollApplication.class, args);
 	}
