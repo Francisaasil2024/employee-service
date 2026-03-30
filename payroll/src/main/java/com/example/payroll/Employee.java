@@ -1,13 +1,15 @@
 package com.example.payroll; 
 
 import java.util.Objects;
+
 import com.example.payroll.role.Role;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
 
 @Entity
 public class Employee {
@@ -21,14 +23,14 @@ public class Employee {
     @ManyToOne 
     private Role role; 
 
-    Employee() {}
+    public Employee() {}
 
-    Employee(String name, Role role) {
+    public Employee(String name, Role role) {
         this.name = name;
         this.role = role;
     }
 
-    Employee(String name, String username, Role role) {
+    public Employee(String name, String username, Role role) {
         this.name = name;
         this.username = username;
         this.role = role;
