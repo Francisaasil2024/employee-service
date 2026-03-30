@@ -1,10 +1,7 @@
 package com.example.payroll;
 
-import com.example.payroll.role.Role;
-import com.example.payroll.role.RoleRepository;
-import com.example.payroll.role.RoleNotFoundException;
-
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.payroll.role.Role;
+import com.example.payroll.role.RoleNotFoundException;
+import com.example.payroll.role.RoleRepository;
+
 @RestController
 class EmployeeController {
     
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
 
-    EmployeeController(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
+    public EmployeeController(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
         this.employeeRepository = employeeRepository;
         this.roleRepository = roleRepository;
     }
