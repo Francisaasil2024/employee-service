@@ -18,6 +18,8 @@ public class Employee {
     private String name;
     @Column(unique = true, nullable = false)
     private String username;
+    private String email;
+    private String department;
 
     // Simple ManyToOne mapping (assumes Role has a primary key named 'id')
     @ManyToOne 
@@ -34,6 +36,14 @@ public class Employee {
         this.name = name;
         this.username = username;
         this.role = role;
+    }
+
+    public Employee(String name, String username, Role role, String email, String department) {
+        this.name = name;
+        this.username = username;
+        this.role = role;
+        this.email = email;
+        this.department = department;
     }
 
     public Long getId() {
@@ -66,6 +76,22 @@ public class Employee {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDepartment() {
+        return this.department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public Long getRoleId() {

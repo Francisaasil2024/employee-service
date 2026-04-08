@@ -5,6 +5,9 @@ import './EditEmployeeForm.css';
 function EditEmployeeForm({ employee, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     name: employee.name,
+    username: employee.username || '',
+    email: employee.email || '',
+    department: employee.department || '',
     role: { id: employee.role?.id || '' }
   });
   const [roles, setRoles] = useState([]);
@@ -27,11 +30,11 @@ function EditEmployeeForm({ employee, onSave, onCancel }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'roleId') {
       setFormData(prev => ({
         ...prev,
-        role: { id: parseInt(value) }
+        role: { id: parseInt(value, 10) }
       }));
     } else {
       setFormData(prev => ({
@@ -43,7 +46,7 @@ function EditEmployeeForm({ employee, onSave, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       setError('Employee name is required');
       return;
@@ -74,9 +77,9 @@ function EditEmployeeForm({ employee, onSave, onCancel }) {
         {error && (
           <div className="alert alert-danger alert-dismissible fade show" role="alert">
             {error}
-            <button 
-              type="button" 
-              className="btn-close" 
+            <button
+              type="button"
+              className="btn-close"
               onClick={() => setError(null)}
             ></button>
           </div>
@@ -85,7 +88,7 @@ function EditEmployeeForm({ employee, onSave, onCancel }) {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="edit-name" className="form-label">
-              Employee Name <span className="text-danger">*</span>
+              Full Name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -95,6 +98,54 @@ function EditEmployeeForm({ employee, onSave, onCancel }) {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter employee name"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="edit-username" className="form-label">
+              Username
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="edit-username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter username"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="edit-email" className="form-label">
+              Email
+            </label>
+            <input
+              type="email"
+              className="form-control"
+              id="edit-email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter email"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="edit-department" className="form-label">
+              Department
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="edit-department"
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              placeholder="Enter department"
               disabled={loading}
             />
           </div>

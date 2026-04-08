@@ -10,50 +10,36 @@ function EmployeeList() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  const username = localStorage.getItem('username');
+  const isAdmin = role === 'ADMIN';
+
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [role]);
+
+  const getAuthHeaders = () => {
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await axios.get('/employees');
-      
-      // Safely handle the response - ensure it's always an array
+
+      const endpoint = isAdmin ? '/employees' : '/employees/me';
+      const response = await axios.get(endpoint, { headers: getAuthHeaders() });
       let data = response.data;
-      
-      // If response is wrapped in a structure, extract the array
-      if (data && typeof data === 'object') {
-        // If it's an array, use it directly
-        if (Array.isArray(data)) {
-          setEmployees(data);
-        } 
-        // If it's an object with an employees or results property, use that
-        else if (Array.isArray(data.employees)) {
-          setEmployees(data.employees);
-        } 
-        else if (Array.isArray(data.results)) {
-          setEmployees(data.results);
-        }
-        // If it's an object with data property that's an array
-        else if (Array.isArray(data.data)) {
-          setEmployees(data.data);
-        }
-        // Otherwise, initialize as empty array
-        else {
-          console.warn('Unexpected response format:', data);
-          setEmployees([]);
-        }
-      } else {
-        // If response is not an object, set empty array
-        setEmployees([]);
+
+      if (!Array.isArray(data)) {
+        data = data ? [data] : [];
       }
+
+      setEmployees(data);
     } catch (err) {
-      setError('Failed to fetch employees. Make sure the backend is running on http://localhost:8080');
+      setError('Failed to fetch employees. Please make sure you are logged in and the backend is running.');
       console.error('Error fetching employees:', err);
-      // Ensure employees is always an array even on error
       setEmployees([]);
     } finally {
       setLoading(false);
@@ -63,8 +49,7 @@ function EmployeeList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`/employees/${id}`);
-        // Filter out the deleted employee from the state
+        await axios.delete(`/employees/${id}`, { headers: getAuthHeaders() });
         setEmployees(prevEmployees => 
           Array.isArray(prevEmployees) 
             ? prevEmployees.filter(emp => emp.id !== id)
@@ -79,10 +64,8 @@ function EmployeeList() {
 
   const handleUpdate = async (id, updatedEmployee) => {
     try {
-      const response = await axios.put(`/employees/${id}`, updatedEmployee);
+      const response = await axios.put(`/employees/${id}`, updatedEmployee, { headers: getAuthHeaders() });
       const updatedData = response.data;
-      
-      // Safely update the employees array
       setEmployees(prevEmployees => 
         Array.isArray(prevEmployees)
           ? prevEmployees.map(emp => emp.id === id ? updatedData : emp)
@@ -100,7 +83,7 @@ function EmployeeList() {
 
   const handleFormClose = () => {
     setShowForm(false);
-    fetchEmployees(); // Refresh the list after adding/editing
+    fetchEmployees();
   };
 
   if (loading) {
@@ -117,13 +100,20 @@ function EmployeeList() {
   return (
     <div className="employee-list">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>👥 Employee Management</h2>
-        <button
-          className="btn btn-success btn-lg"
-          onClick={handleAddEmployee}
-        >
-          ➕ Add New Employee
-        </button>
+        <div>
+          <h2>👥 Employee Management</h2>
+          {!isAdmin && (
+            <div className="text-muted">Welcome, {username}! Here is your profile.</div>
+          )}
+        </div>
+        {isAdmin && (
+          <button
+            className="btn btn-success btn-lg"
+            onClick={handleAddEmployee}
+          >
+            ➕ Add New Employee
+          </button>
+        )}
       </div>
 
       {error && (
@@ -150,7 +140,7 @@ function EmployeeList() {
           <div className="col-12">
             <div className="alert alert-info text-center">
               <h5>No employees found</h5>
-              <p>Get started by adding your first employee!</p>
+              <p>There are no employee records to display.</p>
             </div>
           </div>
         ) : (
@@ -160,6 +150,8 @@ function EmployeeList() {
                 employee={employee}
                 onDelete={handleDelete}
                 onUpdate={handleUpdate}
+                canEdit={isAdmin}
+                canDelete={isAdmin}
               />
             </div>
           ))

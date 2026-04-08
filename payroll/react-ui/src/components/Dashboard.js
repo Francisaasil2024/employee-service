@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import EmployeeList from './EmployeeList';
 import RoleList from './RoleList';
+import MyProfile from './MyProfile';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
     navigate('/login');
   };
 
@@ -52,12 +56,13 @@ function Dashboard() {
           Logout
         </button>
       </div>
-      <Navbar />
+      <Navbar onLogout={handleLogout} />
       <div className="container mt-4">
         <Routes>
           <Route path="/" element={<EmployeeList />} />
           <Route path="/employees" element={<EmployeeList />} />
           <Route path="/roles" element={<RoleList />} />
+          <Route path="/profile" element={<MyProfile />} />
         </Routes>
       </div>
     </div>

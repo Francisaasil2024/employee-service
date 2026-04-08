@@ -22,13 +22,16 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/auth/login', {
+      const response = await axios.post('/auth/login', {
         username,
         password
       });
 
       if (response.data.success) {
         localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('token', response.data.token || '');
+        localStorage.setItem('username', response.data.username || username);
+        localStorage.setItem('role', response.data.role || 'USER');
         navigate('/dashboard');
       } else {
         setError(response.data.message || 'Invalid username or password');

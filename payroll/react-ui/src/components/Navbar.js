@@ -7,7 +7,15 @@ function Navbar({ onLogout }) {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      onLogout();
+      if (onLogout) {
+        onLogout();
+      } else {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        window.location.href = '/login';
+      }
     }
   };
 
@@ -36,6 +44,14 @@ function Navbar({ onLogout }) {
                 to="/employees"
               >
                 👥 Employees
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
+                to="/profile"
+              >
+                👤 My Profile
               </Link>
             </li>
             <li className="nav-item">

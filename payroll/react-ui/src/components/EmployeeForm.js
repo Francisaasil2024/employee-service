@@ -5,6 +5,9 @@ import './EmployeeForm.css';
 function EmployeeForm({ onClose }) {
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
+    email: '',
+    department: '',
     role: { id: '' }
   });
   const [roles, setRoles] = useState([]);
@@ -28,11 +31,11 @@ function EmployeeForm({ onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'roleId') {
       setFormData(prev => ({
         ...prev,
-        role: { id: parseInt(value) }
+        role: { id: parseInt(value, 10) }
       }));
     } else {
       setFormData(prev => ({
@@ -44,9 +47,14 @@ function EmployeeForm({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       setError('Employee name is required');
+      return;
+    }
+
+    if (!formData.username.trim()) {
+      setError('Employee username is required');
       return;
     }
 
@@ -58,15 +66,22 @@ function EmployeeForm({ onClose }) {
     try {
       setLoading(true);
       setError(null);
-      
-      await axios.post('/employees', formData);
-      
+      const token = localStorage.getItem('token');
+      await axios.post('/employees', formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ''
+        }
+      });
+
       setSuccess(true);
       setFormData({
         name: '',
+        username: '',
+        email: '',
+        department: '',
         role: { id: '' }
       });
-      
+
       setTimeout(() => {
         onClose();
       }, 1500);
@@ -87,14 +102,14 @@ function EmployeeForm({ onClose }) {
         {error && (
           <div className="alert alert-danger alert-dismissible fade show" role="alert">
             {error}
-            <button 
-              type="button" 
-              className="btn-close" 
+            <button
+              type="button"
+              className="btn-close"
               onClick={() => setError(null)}
             ></button>
           </div>
         )}
-        
+
         {success && (
           <div className="alert alert-success alert-dismissible fade show" role="alert">
             ✅ Employee added successfully!
@@ -104,7 +119,7 @@ function EmployeeForm({ onClose }) {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">
-              Employee Name <span className="text-danger">*</span>
+              Full Name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -114,6 +129,54 @@ function EmployeeForm({ onClose }) {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter employee name"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">
+              Username <span className="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter employee username"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">
+              Email
+            </label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter employee email"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="department" className="form-label">
+              Department
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="department"
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              placeholder="Enter employee department"
               disabled={loading}
             />
           </div>

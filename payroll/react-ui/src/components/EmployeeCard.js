@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import EditEmployeeForm from './EditEmployeeForm';
 import './EmployeeCard.css';
 
-function EmployeeCard({ employee, onDelete, onUpdate }) {
+function EmployeeCard({ employee, onDelete, onUpdate, canEdit = false, canDelete = false }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEditClick = () => {
@@ -45,18 +45,22 @@ function EmployeeCard({ employee, onDelete, onUpdate }) {
         </p>
       </div>
       <div className="card-footer bg-light">
-        <button 
-          className="btn btn-sm btn-warning me-2"
-          onClick={handleEditClick}
-        >
-          ✏️ Edit
-        </button>
-        <button 
-          className="btn btn-sm btn-danger"
-          onClick={() => onDelete(employee.id)}
-        >
-          🗑️ Delete
-        </button>
+        {canEdit && (
+          <button 
+            className="btn btn-sm btn-warning me-2"
+            onClick={handleEditClick}
+          >
+            ✏️ Edit
+          </button>
+        )}
+        {canDelete && (
+          <button 
+            className="btn btn-sm btn-danger"
+            onClick={() => onDelete(employee.id)}
+          >
+            🗑️ Delete
+          </button>
+        )}
       </div>
     </div>
   );

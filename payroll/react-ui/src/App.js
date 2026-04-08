@@ -27,8 +27,11 @@ function App() {
           <PrivateRoute>
             <Dashboard />
           </PrivateRoute>
-        } />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        } />        <Route path="/profile" element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } />        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
