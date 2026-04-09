@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import EmployeeCard from './EmployeeCard';
 import EmployeeForm from './EmployeeForm';
 import './EmployeeList.css';
@@ -10,26 +10,24 @@ function EmployeeList() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
   const username = localStorage.getItem('username');
-  const isAdmin = role === 'ADMIN';
+
+  // ✅ Fixed: check lowercase 'admin'
+  const isAdmin = role === 'admin';
 
   useEffect(() => {
     fetchEmployees();
   }, [role]);
-
-  const getAuthHeaders = () => {
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       setError(null);
 
+      // ✅ Fixed: use api instead of axios (token added automatically)
       const endpoint = isAdmin ? '/employees' : '/employees/me';
-      const response = await axios.get(endpoint, { headers: getAuthHeaders() });
+      const response = await api.get(endpoint);
       let data = response.data;
 
       if (!Array.isArray(data)) {
@@ -49,9 +47,10 @@ function EmployeeList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`/employees/${id}`, { headers: getAuthHeaders() });
-        setEmployees(prevEmployees => 
-          Array.isArray(prevEmployees) 
+        // ✅ Fixed: use api instead of axios
+        await api.delete(`/employees/${id}`);
+        setEmployees(prevEmployees =>
+          Array.isArray(prevEmployees)
             ? prevEmployees.filter(emp => emp.id !== id)
             : []
         );
@@ -64,9 +63,10 @@ function EmployeeList() {
 
   const handleUpdate = async (id, updatedEmployee) => {
     try {
-      const response = await axios.put(`/employees/${id}`, updatedEmployee, { headers: getAuthHeaders() });
+      // ✅ Fixed: use api instead of axios
+      const response = await api.put(`/employees/${id}`, updatedEmployee);
       const updatedData = response.data;
-      setEmployees(prevEmployees => 
+      setEmployees(prevEmployees =>
         Array.isArray(prevEmployees)
           ? prevEmployees.map(emp => emp.id === id ? updatedData : emp)
           : []
