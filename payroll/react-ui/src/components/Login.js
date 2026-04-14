@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -22,16 +22,18 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/auth/login', {
+      // ✅ Fixed: use api instead of axios (baseURL automatically added)
+      const response = await api.post('/auth/login', {
         username,
         password
       });
 
       if (response.data.success) {
+        // ✅ Fixed: save role as lowercase to match backend
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('token', response.data.token || '');
         localStorage.setItem('username', response.data.username || username);
-        localStorage.setItem('role', response.data.role || 'USER');
+        localStorage.setItem('role', response.data.role ? response.data.role.toLowerCase() : 'developer');
         navigate('/dashboard');
       } else {
         setError(response.data.message || 'Invalid username or password');
