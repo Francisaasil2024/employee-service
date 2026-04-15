@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.payroll.role.Role;
 import com.example.payroll.role.RoleNotFoundException;
 import com.example.payroll.role.RoleRepository;
-import com.example.payroll.user.AuthController;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -60,13 +59,6 @@ class EmployeeController {
         );
 
         Employee saved = employeeRepository.save(employee);
-
-        // Register login credentials for the new employee
-        AuthController.addUser(
-            newEmployee.getUsername().trim(),
-            newEmployee.getPassword().trim(),
-            newEmployee.getName().trim()
-        );
 
         return saved;
     }
