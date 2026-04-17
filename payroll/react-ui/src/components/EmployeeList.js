@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api';
+import axios from 'axios';
 import EmployeeCard from './EmployeeCard';
 import EmployeeForm from './EmployeeForm';
 import './EmployeeList.css';
@@ -10,24 +10,16 @@ function EmployeeList() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  const role = localStorage.getItem('role');
-  const username = localStorage.getItem('username');
-
-  // ✅ Fixed: check lowercase 'admin'
-  const isAdmin = role === 'admin';
-
   useEffect(() => {
     fetchEmployees();
-  }, [role]);
+  }, []);
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // ✅ Fixed: use api instead of axios (token added automatically)
-      const endpoint = isAdmin ? '/employees' : '/employees/me';
-      const response = await api.get(endpoint);
+      const response = await axios.get('http://localhost:8080/employees');
       let data = response.data;
 
       if (!Array.isArray(data)) {
@@ -36,7 +28,7 @@ function EmployeeList() {
 
       setEmployees(data);
     } catch (err) {
-      setError('Failed to fetch employees. Please make sure you are logged in and the backend is running.');
+      setError('Failed to fetch employees. Please make sure the backend is running.');
       console.error('Error fetching employees:', err);
       setEmployees([]);
     } finally {
@@ -47,8 +39,7 @@ function EmployeeList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        // ✅ Fixed: use api instead of axios
-        await api.delete(`/employees/${id}`);
+        await axios.delete(`http://localhost:8080/employees/${id}`);
         setEmployees(prevEmployees =>
           Array.isArray(prevEmployees)
             ? prevEmployees.filter(emp => emp.id !== id)
@@ -63,8 +54,7 @@ function EmployeeList() {
 
   const handleUpdate = async (id, updatedEmployee) => {
     try {
-      // ✅ Fixed: use api instead of axios
-      const response = await api.put(`/employees/${id}`, updatedEmployee);
+      const response = await axios.put(`http://localhost:8080/employees/${id}`, updatedEmployee);
       const updatedData = response.data;
       setEmployees(prevEmployees =>
         Array.isArray(prevEmployees)

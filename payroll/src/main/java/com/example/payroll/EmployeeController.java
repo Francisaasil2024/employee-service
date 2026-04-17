@@ -42,9 +42,6 @@ class EmployeeController {
         if (newEmployee.getUsername() == null || newEmployee.getUsername().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee username is required");
         }
-        if (newEmployee.getPassword() == null || newEmployee.getPassword().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee password is required");
-        }
         if (newEmployee.getRoleId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee roleId is required");
         }
@@ -66,7 +63,6 @@ class EmployeeController {
     public static class EmployeeRequest {
         private String name;
         private String username;
-        private String password;
         private Long roleId;
 
         public String getName() { return name; }
@@ -74,9 +70,6 @@ class EmployeeController {
 
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
-
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
 
         public Long getRoleId() { return roleId; }
         public void setRoleId(Long roleId) { this.roleId = roleId; }

@@ -21,7 +21,7 @@ function EmployeeForm({ onClose }) {
 
   const fetchRoles = async () => {
     try {
-      const response = await axios.get('/roles');
+      const response = await axios.get('http://localhost:8080/roles');
       setRoles(response.data);
     } catch (err) {
       console.error('Error fetching roles:', err);
@@ -66,12 +66,7 @@ function EmployeeForm({ onClose }) {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
-      await axios.post('/employees', formData, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : ''
-        }
-      });
+      await axios.post('http://localhost:8080/employees', formData);
 
       setSuccess(true);
       setFormData({
